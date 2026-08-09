@@ -6,6 +6,7 @@ so simple services.
 |:-------:|:-----------:|
 | [auth](./docs/auth.md) | middleware |
 | [rbac](./docs/rbac.md) | middleware, handler, service, model |
+| health | router, handler, service |
 
 如何集成?
 
