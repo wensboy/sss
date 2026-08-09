@@ -1,0 +1,11 @@
+{
+    "version": "v0.1.0",
+    "entry": {
+        "name": "sss",
+        "label": "sss",
+        "usage": "sss [command] [flags] [args...]",
+        "description": "ss module services command-line tool",
+        "flags": [],
+        "sub": []
+    }
+}

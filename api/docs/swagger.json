@@ -1,0 +1,103 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "sss is a simple pre-built service repository that contains endpoint definitions for commonly integrable services.",
+        "title": "SSS API Definition",
+        "contact": {
+            "name": "API support and feedback",
+            "url": "-",
+            "email": "2195058149@qq.com"
+        },
+        "license": {
+            "name": "MIT",
+            "url": "https://github.com/wensboy/sss/blob/main/LICENSE"
+        },
+        "version": "1.0"
+    },
+    "basePath": "/api/v1",
+    "paths": {
+        "/check": {
+            "get": {
+                "description": "健康检查 - Check端点，用于综合检查服务各组件状态，返回 \"check\"",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "health"
+                ],
+                "summary": "Check",
+                "responses": {
+                    "200": {
+                        "description": "成功响应，code=0, msg=\\\"check\\\", data=nil",
+                        "schema": {
+                            "$ref": "#/definitions/model.RestResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/healthy": {
+            "get": {
+                "description": "健康检查 - Healthy端点，用于检测服务是否处于健康状态，返回 \"healthy\"",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "health"
+                ],
+                "summary": "Healthy",
+                "responses": {
+                    "200": {
+                        "description": "成功响应，code=0, msg=\\\"healthy\\\", data=nil",
+                        "schema": {
+                            "$ref": "#/definitions/model.RestResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/ping": {
+            "get": {
+                "description": "健康检查 - Ping端点，用于检测服务是否可达，返回 \"pong\"",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "health"
+                ],
+                "summary": "Ping",
+                "responses": {
+                    "200": {
+                        "description": "成功响应，code=0, msg=\\\"pong\\\", data=nil",
+                        "schema": {
+                            "$ref": "#/definitions/model.RestResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "model.RestResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {},
+                "msg": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
