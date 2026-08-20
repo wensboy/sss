@@ -1,5 +1,24 @@
 {
     "rest": {
-        "listen": ":3000"
+        "listen": ":3000",
+        "middleware": {
+            "auth": {
+                "enabled": false,
+                "whiteList": ["/api/v1/login", "/api/v1/register"], 
+                "jwt": {
+                    "secret": "e702eb5d-ea54-47f9-82d2-364176378326",
+                    "issuer": "sss",
+                    "expiresAt": 7200,
+                    "issuedAt": 0,
+                    "notBefore": 0,
+                    "audience": ["browser", "client"]
+                },
+                "session": {
+                    "storeType": "<cookie | redis | mem | sqlite>",
+                    "authKey": "ce8040c8-272e-4d4d-a79c-075c89b01661",
+                    "encryptKey": "5ffda918-3529-49ac-a1d2-9b915122cd0b"
+                }
+            }
+        }
     }
 }
