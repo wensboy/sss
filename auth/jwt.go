@@ -5,6 +5,12 @@ import (
 	"github.com/labstack/echo/v5"
 )
 
+const (
+	VarKey_JwtSecret     = "auth.jwt::var::secret"
+	VarKey_JwtUserClaims = "auth.jwt::var::user_claims"
+	ToolKey_JwtUtil      = "auth.jwt::tool::jwt_util"
+)
+
 type UserClaims struct {
 	UserId   int    `json:"user_id"`
 	UserName string `json:"user_name"`

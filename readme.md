@@ -33,7 +33,7 @@ go get -u github.com/wensboy/sss
 go install github.com/swaggo/swag/cmd/swag@latest
 # 生成 openapi 文档(在包含 main.go 的目录下执行)
 swag init [-o <target>]
-# 启动开发测试
+# 启动测试服务器
 go run ./main.go
 ```
 
