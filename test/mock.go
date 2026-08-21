@@ -8,31 +8,30 @@ import (
 	"github.com/wensboy/sss/health"
 )
 
-func MockLoadCommand(path string) {
+type Mocker struct{}
+
+func (m *Mocker) LoadCommand(path string) {
 	_ = config.InitCommand(path)
 }
 
-func MockLoadEnv(paths ...string) {
+func (m *Mocker) LoadEnv(paths ...string) {
 	err := godotenv.Load(paths...)
 	if err != nil {
 		panic(err)
 	}
 }
 
-func MockLoadConfig(dir string, paths ...string) {
+func (m *Mocker) LoadConfig(dir string, paths ...string) {
 	cfg := config.NewConfig().SetDir(dir)
 	config.SetGlobalConfig(cfg)
 	cfg.Load(paths...)
 }
 
-func MockRestServer() *server.RestServer {
+func (m *Mocker) RestServer(basePath string) *server.RestServer {
 	restServer := server.NewRestServer()
-	mockMountContext := func(s *server.RestServer) {
-		s.Scontext.MountLogger()
-	}
 	restServer.MountModules(
-		mockMountContext,
-		restServer.MountRouters("/api/v1",
+		restServer.MountLogger(nil, nil, nil),
+		restServer.MountRouters(basePath,
 			health.NewHealthRouterEntry().UseEchoRouter(),
 			api.NewSwaggerRouterEntry().UseEchoRouter(),
 			api.NewScalarRouterEntry().UseEchoRouter(),
@@ -42,7 +41,7 @@ func MockRestServer() *server.RestServer {
 	return restServer
 }
 
-func MockRunner() *server.Runner {
-	runner := server.NewRunner().SetServer(MockRestServer())
+func (m *Mocker) Runner() *server.Runner {
+	runner := server.NewRunner().SetServer(m.RestServer("/api"))
 	return runner
 }

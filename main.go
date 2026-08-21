@@ -1,10 +1,15 @@
 package main
 
 import (
+	"embed"
+
 	_ "github.com/wensboy/sss/api/docs"
 
 	"github.com/wensboy/sss/test"
 )
+
+//go:embed test/spec/*
+var specFiles embed.FS
 
 // @title SSS API Definition
 // @version 1.0
@@ -19,9 +24,10 @@ import (
 
 // @BasePath /api/v1
 func main() {
-	test.MockLoadCommand("./test/spec/command.json")
-	test.MockLoadEnv("./test/spec/.env")
-	test.MockLoadConfig("./test/spec", "server.json")
-	runner := test.MockRunner()
+	mocker := test.Mocker{}
+	mocker.LoadCommand("./test/spec/command.json")
+	mocker.LoadEnv("./test/spec/.env")
+	mocker.LoadConfig("./test/spec", "server.json")
+	runner := mocker.Runner()
 	runner.Run()
 }

@@ -20,5 +20,9 @@
                 }
             }
         }
+    },
+    "log": {
+        "level": "debug",
+        "env": "development"
     }
 }

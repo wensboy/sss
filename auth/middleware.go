@@ -5,7 +5,7 @@ import (
 
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo/v5"
-	"github.com/wensboy/sss/model"
+	"github.com/wensboy/ss/server"
 )
 
 const (
@@ -15,7 +15,7 @@ const (
 
 type AuthSkipper func(c *echo.Context) bool
 
-func AuthWithJwt(mc model.MiddlewareContext) echo.MiddlewareFunc {
+func AuthWithJwt(mc server.MiddlewareContext) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c *echo.Context) error {
 			skipper, ok := mc.Get(ToolKey_AuthSkipper).(AuthSkipper)
@@ -38,7 +38,7 @@ func AuthWithJwt(mc model.MiddlewareContext) echo.MiddlewareFunc {
 	}
 }
 
-func AuthWithSession(mc model.MiddlewareContext) echo.MiddlewareFunc {
+func AuthWithSession(mc server.MiddlewareContext) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c *echo.Context) error {
 			skipper, ok := mc.Get(ToolKey_AuthSkipper).(AuthSkipper)
