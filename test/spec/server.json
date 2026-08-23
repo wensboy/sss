@@ -18,6 +18,13 @@
                     "authKey": "ce8040c8-272e-4d4d-a79c-075c89b01661",
                     "encryptKey": "5ffda918-3529-49ac-a1d2-9b915122cd0b"
                 }
+            },
+            "log": {
+                "enabled": true,
+                "template": ""
+            },
+            "perf": {
+                "enabled": false
             }
         }
     },

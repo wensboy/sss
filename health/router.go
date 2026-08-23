@@ -13,10 +13,6 @@ func NewHealthRouterEntry() HealthRouterEntry {
 
 func (h HealthRouterEntry) UseEchoRouter() func(*echo.Group, *server.ServerContext) {
 	return func(g *echo.Group, sctx *server.ServerContext) {
-		logger, err := sctx.Logger.UseZap()
-		if err == nil {
-			logger.Info("HealthRouterEntry: UseEchoRouter")
-		}
 		handler := NewEchoHealthHandler()
 		g.GET("/ping", handler.Ping)
 		g.GET("/healthy", handler.Healthy)
