@@ -22,7 +22,7 @@ var specFiles embed.FS
 // @license.name MIT
 // @license.url https://github.com/wensboy/sss/blob/main/LICENSE
 
-// @BasePath /api/v1
+// @BasePath /api
 func main() {
 	mocker := test.Mocker{}
 	mocker.LoadCommand("./test/spec/command.json")

@@ -113,7 +113,7 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "",
-	BasePath:         "/api/v1",
+	BasePath:         "/api",
 	Schemes:          []string{},
 	Title:            "SSS API Definition",
 	Description:      "sss is a simple pre-built service repository that contains endpoint definitions for commonly integrable services.",

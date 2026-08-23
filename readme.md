@@ -31,7 +31,7 @@ go get -u github.com/wensboy/sss
 ```bash
 # 安装 swag cli
 go install github.com/swaggo/swag/cmd/swag@latest
-# 生成 openapi 文档(在包含 main.go 的目录下执行)
+# 生成 openapi 文档(在包含 main.go 的目录下执行), 例如: swag init -o api/docs/
 swag init [-o <target>]
 # 启动测试服务器
 go run ./main.go
