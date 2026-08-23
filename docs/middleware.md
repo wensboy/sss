@@ -62,3 +62,28 @@ func <middleware_name>(<middleware_context>, <inject_tools_func>) echo.Middlewar
 注意: 1) 注入函数一定要在 next 执行前调用 2) 注入函数本质上是一种约定, key能够统一管理
 
 2. 统一上下文(和相关变量一致, 工具也是kv结构).
+
+sss 中中间件定义形式:
+
+```go
+func <middleware-name>(<middleware-context>) echo.MiddlewareFunc {
+    return func(next echo.HandlerFunc) echo.HandlerFunc {
+        return func(c *echo.Context) error {
+            // 中间件逻辑
+        }
+    }
+}
+```
+
+由于形式一致, 通常会在相关的主索引文件中按照如下格式记录必要的参数:
+
+```md
+| 上下文 | 变量 | 值类型 | 示例 | 说明 |
+|:-----:|:-----:|:-----:|:-----:|:-----:|
+| <context-value> | <varible> | <value-type> | <eg> | <description> |
+```
+
+例如:
+| 上下文 | 变量 | 值类型 | 示例 | 说明 |
+|:-----:|:-----:|:-----:|:-----:|:-----:|
+| auth.jwt::tool::jwt_util | ToolKey_JwtUtil | interface | JwtUtil | jwt工具, 包含生成token, 解压负载, 提取token |
