@@ -10,7 +10,7 @@ require (
 	github.com/labstack/echo/v5 v5.3.1
 	github.com/swaggo/echo-swagger/v2 v2.0.1
 	github.com/swaggo/swag v1.16.6
-	github.com/wensboy/ss v0.1.1-0.20260824030203-223f044656b4
+	github.com/wensboy/ss v0.1.1-0.20260824072743-6913427dc2cd
 	go.uber.org/zap v1.28.0
 )
 

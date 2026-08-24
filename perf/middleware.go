@@ -12,17 +12,20 @@ import (
 )
 
 const (
-	VarKey_PerfLinkScan        = "perf::var::link_scan"
-	VarKey_PerfLinkScanEnabled = "perf::var::link_scan_enabled"
+	Key_Lagency = "lagency"
+)
+
+const (
+	VarKey_PerfLagencyEnabled = "perf::var::lagency_enabled"
 
 	VarKey_PerfRecoverEnabled = "perf::var::recover_enabled"
 )
 
-// PerfLinkScan 用于计算链路scan并设置到上下文.
-func PerfLinkScan(mc server.MiddlewareContext) echo.MiddlewareFunc {
+// PerfLagency 用于计算链路lagency并设置到上下文.
+func PerfLagency(mc server.MiddlewareContext) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c *echo.Context) error {
-			if !mc.MustGet(VarKey_PerfLinkScanEnabled).(bool) {
+			if !mc.MustGet(VarKey_PerfLagencyEnabled).(bool) {
 				return next(c)
 			}
 			start := time.Now()
@@ -31,7 +34,7 @@ func PerfLinkScan(mc server.MiddlewareContext) echo.MiddlewareFunc {
 				return err
 			}
 			scan := time.Since(start)
-			c.Set(VarKey_PerfLinkScan, scan)
+			c.Set(Key_Lagency, scan.Milliseconds())
 			return nil
 		}
 	}

@@ -21,10 +21,11 @@
             },
             "log": {
                 "enabled": true,
-                "template": "[request] {{.timestamp}} - {{.method}} {{.uri}} -> {{.statusCode}} {{.lagency}}"
+                "template": "[request] {{.timestamp}} - {{.method}} {{.uri}} -> {{.statusCode}} {{.lagency}}",
+                "templateCtx": ["timestamp", "method", "uri", "statusCode", "lagency"]
             },
             "perf": {
-                "linkScan": false,
+                "lagency": true,
                 "recover": true
             }
         }

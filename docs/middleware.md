@@ -87,3 +87,8 @@ func <middleware-name>(<middleware-context>) echo.MiddlewareFunc {
 | 上下文 | 变量 | 值类型 | 示例 | 说明 |
 |:-----:|:-----:|:-----:|:-----:|:-----:|
 | auth.jwt::tool::jwt_util | ToolKey_JwtUtil | interface | JwtUtil | jwt工具, 包含生成token, 解压负载, 提取token |
+
+sss 中间件中需要区分的几种 key 模式:
+
+- middleware context: VarKey_, ToolKey_
+- muxer context: Key_, LKey_

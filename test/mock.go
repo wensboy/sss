@@ -1,10 +1,10 @@
 package test
 
 import (
-	"fmt"
 	"html/template"
 
 	"github.com/joho/godotenv"
+	"github.com/spf13/cast"
 	"github.com/wensboy/ss/config"
 	"github.com/wensboy/ss/log"
 	"github.com/wensboy/ss/server"
@@ -47,19 +47,27 @@ func (m *Mocker) RestServer(basePath string) *server.RestServer {
 			format := config.MustLookup[string](
 				config.GConfigSource("server.rest.middleware.log.template"),
 			)
+			tmplList := config.MustLookupRaw(
+				config.GConfigSource("server.rest.middleware.log.templateCtx"),
+				config.DefaultSource([]string{}),
+			)
 			tmpl, _ := template.New("mocker").Parse(format)
 			rs.Scontext.MContext.Set(log3.VarKey_LogEnabled, enabled)
 			rs.Scontext.MContext.Set(log3.VarKey_LogTemplate, tmpl)
-			rs.Scontext.MContext.Set(log3.VarKey_LogTemplateCtx, log3.TemplateContext{})
+			rs.Scontext.MContext.Set(log3.VarKey_LogTemplateCtx, cast.Must[[]string](cast.ToStringSliceE(tmplList)))
 			rs.Scontext.MContext.Set(log3.ToolKey_LogMutateLogger, rs.Scontext.GetLogger())
 			enabled = config.MustLookup[bool](
 				config.GConfigSource("server.rest.perf.recover"),
 				config.DefaultSource(true),
 			)
 			rs.Scontext.MContext.Set(perf.VarKey_PerfRecoverEnabled, enabled)
-			fmt.Printf("%+v\n", rs.Scontext.MContext.MustGet(perf.VarKey_PerfRecoverEnabled).(bool))
+			enabled = config.MustLookup[bool](
+				config.GConfigSource("server.rest.perf.lagency"),
+				config.DefaultSource(true),
+			)
+			rs.Scontext.MContext.Set(perf.VarKey_PerfLagencyEnabled, enabled)
 		}),
-		restServer.MountMiddlewares(server.GLOBAL_MIDDLEWARE, perf.PerfRecover(restServer.Scontext.MContext), log3.LogWithZap(restServer.Scontext.MContext)),
+		restServer.MountMiddlewares(server.GLOBAL_MIDDLEWARE, perf.PerfRecover, log3.LogWithZap, perf.PerfLagency),
 		restServer.MountRouters(basePath,
 			health.NewHealthRouterEntry().UseEchoRouter(),
 			api.NewSwaggerRouterEntry().UseEchoRouter(),

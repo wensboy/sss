@@ -1,5 +1,7 @@
 # LOG
 
+## log design
+
 sss 日志主要包含如下考虑:
 - 服务细节: 配置加载过程, 服务挂组件挂载过程...
 - 中间件: 请求链路...
@@ -66,3 +68,9 @@ func main() {
 2. structed logger api: 适用于结构化日志收集
 3. raw logger api: 适用于调试和开发
 
+## log middleware
+
+| 上下文 | 变量 | 值类型 | 示例 | 说明 |
+|:-----:|:-----:|:-----:|:-----:|:-----:|
+| log::var::enabled | VarKey_LogEnabled | bool | true | 是否开启日志 |
+| log::var::template | VarKey_LogTemplate | string | 参考 test/spec/server.json | 符合 text/template 库的模板字符串 |

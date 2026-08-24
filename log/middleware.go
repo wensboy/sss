@@ -11,6 +11,10 @@ import (
 )
 
 const (
+	Key_TemplateCtx = "template_ctx"
+)
+
+const (
 	VarKey_LogEnabled       = "log::var::enabled"
 	VarKey_LogTemplate      = "log::var::template"
 	VarKey_LogTemplateCtx   = "log::var::template_ctx"
@@ -22,14 +26,21 @@ func LogWithZap(mc server.MiddlewareContext) echo.MiddlewareFunc {
 		return func(c *echo.Context) error {
 			var tmplCtx TemplateContext
 			if mc.MustGet(VarKey_LogEnabled).(bool) {
-				tmplCtx = mc.MustGet(VarKey_LogTemplateCtx).(TemplateContext)
-				c.Set(VarKey_LogTemplateCtx, tmplCtx)
+				tmplCtx = make(TemplateContext)
+				c.Set(Key_TemplateCtx, tmplCtx)
 			}
 			err := next(c)
 			if tmplCtx != nil {
 				mlogger := mc.MustGet(ToolKey_LogMutateLogger).(*log.MutateLogger)
 				tmpl := mc.MustGet(VarKey_LogTemplate).(*template.Template)
+				tmplList := mc.MustGet(VarKey_LogTemplateCtx).([]string)
 				logger, _ := mlogger.UseZap()
+				for _, key := range tmplList {
+					v := c.Get(key)
+					if v != nil {
+						tmplCtx[key] = v
+					}
+				}
 				var str strings.Builder
 				if err := tmpl.Execute(&str, tmplCtx); err != nil {
 					logger.Error("failed to execute log template", zap.Error(err))

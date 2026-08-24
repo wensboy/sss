@@ -124,6 +124,10 @@ github.com/wensboy/ss v0.1.1-0.20260821010042-8f401737b7cc h1:E2jRH3PlrwXzSMitmK
 github.com/wensboy/ss v0.1.1-0.20260821010042-8f401737b7cc/go.mod h1:k/uVD/75LvtJ/wq+g9REyQtBsz20/uGLee4yW0mH5z4=
 github.com/wensboy/ss v0.1.1-0.20260824030203-223f044656b4 h1:SH5+EyV/DJGdBxoKEhNaAf4SXjhTa/X09LUgEOvAYyc=
 github.com/wensboy/ss v0.1.1-0.20260824030203-223f044656b4/go.mod h1:k/uVD/75LvtJ/wq+g9REyQtBsz20/uGLee4yW0mH5z4=
+github.com/wensboy/ss v0.1.1-0.20260824054445-a97beb00eeb0 h1:6h1gITcWwvgvnBdUq7NHGG2ov3vumVK1gCr5+T3CyIg=
+github.com/wensboy/ss v0.1.1-0.20260824054445-a97beb00eeb0/go.mod h1:k/uVD/75LvtJ/wq+g9REyQtBsz20/uGLee4yW0mH5z4=
+github.com/wensboy/ss v0.1.1-0.20260824072743-6913427dc2cd h1:obFBCQpg3UykUbWYeLboyMfG4uVA+4uvbifp7G5zOas=
+github.com/wensboy/ss v0.1.1-0.20260824072743-6913427dc2cd/go.mod h1:k/uVD/75LvtJ/wq+g9REyQtBsz20/uGLee4yW0mH5z4=
 go.opentelemetry.io/auto/sdk v1.2.1 h1:jXsnJ4Lmnqd11kwkBV2LgLoFMZKizbCi5fNZ/ipaZ64=
 go.opentelemetry.io/auto/sdk v1.2.1/go.mod h1:KRTj+aOaElaLi+wW1kO/DZRXwkF4C5xPbEe3ZiIhN7Y=
 go.opentelemetry.io/otel v1.39.0 h1:8yPrr/S0ND9QEfTfdP9V+SiwT4E0G7Y5MO7p85nis48=
