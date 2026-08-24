@@ -40,8 +40,8 @@ go run ./main.go
 针对 **restful api**: 
 
 ```go
-api.NewSwaggerRouterEntry().UseEchoRouter() // swagger ui
-api.NewScalarRouterEntry().UseEchoRouter() // scalar ui
+api.NewSwaggerRouterEntry().UseEchoRouter() // swagger ui -> http://localhost:<port>/swagger/index.html
+api.NewScalarRouterEntry().UseEchoRouter() // scalar ui -> http://localhost:<port>/scalar
 ```
 
 > 与 ss 的关系
