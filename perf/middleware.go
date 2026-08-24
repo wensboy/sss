@@ -44,13 +44,13 @@ func PerfLagency(mc server.MiddlewareContext) echo.MiddlewareFunc {
 // todo: 1) 变更 logger 类型 2) 优化 error 处理
 func PerfRecover(mc server.MiddlewareContext) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c *echo.Context) error {
+		return func(c *echo.Context) (err error) {
 			if mc.MustGet(VarKey_PerfRecoverEnabled).(bool) {
 				defer func() {
 					if err := recover(); err != nil {
 						logger, _ := log.GetGMutateLogger().UseZap()
 						logger.Error("panic recover", zap.Error(err.(error)))
-						model.UseEchoResponder(c).Err(http.StatusInternalServerError, -1, "internal server panic")
+						err = model.UseEchoResponder(c).Err(http.StatusInternalServerError, -1, "internal server panic")
 					}
 				}()
 			}
