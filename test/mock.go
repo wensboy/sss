@@ -4,6 +4,7 @@ import (
 	"html/template"
 
 	"github.com/joho/godotenv"
+	"github.com/labstack/echo/v5"
 	"github.com/spf13/cast"
 	"github.com/wensboy/ss/config"
 	"github.com/wensboy/ss/log"
@@ -56,6 +57,12 @@ func (m *Mocker) RestServer(basePath string) *server.RestServer {
 			rs.Scontext.MContext.Set(log3.VarKey_LogTemplate, tmpl)
 			rs.Scontext.MContext.Set(log3.VarKey_LogTemplateCtx, cast.Must[[]string](cast.ToStringSliceE(tmplList)))
 			rs.Scontext.MContext.Set(log3.ToolKey_LogMutateLogger, rs.Scontext.GetLogger())
+			rs.Scontext.MContext.Set(log3.ToolKey_LogTemplateCtxHook, func(c *echo.Context, tmplCtx log3.TemplateContext, err error) {
+				tmplCtx["timestamp"] = c.Request().Header.Get("X-Request-Start")
+				tmplCtx["method"] = c.Request().Method
+				tmplCtx["uri"] = c.Request().RequestURI
+				_, tmplCtx["statusCode"] = echo.ResolveResponseStatus(c.Response(), err)
+			})
 			enabled = config.MustLookup[bool](
 				config.GConfigSource("server.rest.perf.recover"),
 				config.DefaultSource(true),

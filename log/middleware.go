@@ -15,10 +15,11 @@ const (
 )
 
 const (
-	VarKey_LogEnabled       = "log::var::enabled"
-	VarKey_LogTemplate      = "log::var::template"
-	VarKey_LogTemplateCtx   = "log::var::template_ctx"
-	ToolKey_LogMutateLogger = "log::tool::mutate_logger"
+	VarKey_LogEnabled          = "log::var::enabled"
+	VarKey_LogTemplate         = "log::var::template"
+	VarKey_LogTemplateCtx      = "log::var::template_ctx"
+	ToolKey_LogMutateLogger    = "log::tool::mutate_logger"
+	ToolKey_LogTemplateCtxHook = "log::tool::template_ctx_hook"
 )
 
 func LogWithZap(mc server.MiddlewareContext) echo.MiddlewareFunc {
@@ -34,6 +35,8 @@ func LogWithZap(mc server.MiddlewareContext) echo.MiddlewareFunc {
 				mlogger := mc.MustGet(ToolKey_LogMutateLogger).(*log.MutateLogger)
 				tmpl := mc.MustGet(VarKey_LogTemplate).(*template.Template)
 				tmplList := mc.MustGet(VarKey_LogTemplateCtx).([]string)
+				tmplHook := mc.MustGet(ToolKey_LogTemplateCtxHook).(func(*echo.Context, TemplateContext, error))
+				tmplHook(c, tmplCtx, err)
 				logger, _ := mlogger.UseZap()
 				for _, key := range tmplList {
 					v := c.Get(key)
