@@ -20,11 +20,15 @@ const (
 func LogWithZap(mc server.MiddlewareContext) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c *echo.Context) error {
-			err := next(c)
+			var tmplCtx TemplateContext
 			if mc.MustGet(VarKey_LogEnabled).(bool) {
+				tmplCtx = mc.MustGet(VarKey_LogTemplateCtx).(TemplateContext)
+				c.Set(VarKey_LogTemplateCtx, tmplCtx)
+			}
+			err := next(c)
+			if tmplCtx != nil {
 				mlogger := mc.MustGet(ToolKey_LogMutateLogger).(*log.MutateLogger)
 				tmpl := mc.MustGet(VarKey_LogTemplate).(*template.Template)
-				tmplCtx := mc.MustGet(VarKey_LogTemplateCtx).(TemplateContext)
 				logger, _ := mlogger.UseZap()
 				var str strings.Builder
 				if err := tmpl.Execute(&str, tmplCtx); err != nil {

@@ -10,7 +10,8 @@ require (
 	github.com/labstack/echo/v5 v5.3.1
 	github.com/swaggo/echo-swagger/v2 v2.0.1
 	github.com/swaggo/swag v1.16.6
-	github.com/wensboy/ss v0.1.1-0.20260821010042-8f401737b7cc
+	github.com/wensboy/ss v0.1.1-0.20260824030203-223f044656b4
+	go.uber.org/zap v1.28.0
 )
 
 require (
@@ -40,7 +41,6 @@ require (
 	github.com/syndtr/goleveldb v1.0.0 // indirect
 	github.com/urfave/cli/v3 v3.11.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	go.uber.org/zap v1.28.0 // indirect
 	go.yaml.in/yaml/v2 v2.4.4 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/mod v0.37.0 // indirect

@@ -21,10 +21,11 @@
             },
             "log": {
                 "enabled": true,
-                "template": ""
+                "template": "[request] {{.timestamp}} - {{.method}} {{.uri}} -> {{.statusCode}} {{.lagency}}"
             },
             "perf": {
-                "enabled": false
+                "linkScan": false,
+                "recover": true
             }
         }
     },
