@@ -3,11 +3,11 @@
 - [概述](#overview)
 - [原理](#principle)
 - [设计](#design)
-    - [对象设计](#design-obj)
     - [数据库设计](#design-db)
     - [端点设计](#design-peer)
     - [rpc设计](#design-rpc)
     - [中间件设计](#design-middleware)
+    - [配置设计](#design-config)
 - [函数索引](#func-index)
 - [客户端sdk](#client-sdk)
 
@@ -61,11 +61,9 @@ rbac2: 在 rbac0 基础上加入了角色互斥制约的功能.
 └── service.go <- 业务逻辑
 ```
 
-### <a id="design-obj">对象设计</a>
-
-
-
 ### <a id="design-db">数据库设计</a>
+
+**表设计**
 
 *meta* - 元信息(所有的表都包含的字段, 统一提取并定义)
 
@@ -152,6 +150,40 @@ rbac2: 在 rbac0 基础上加入了角色互斥制约的功能.
 | permission_id | bigint | not null | - | ref permission.pid | 权限id |
 | creater | bigint | not null | - | ref users.uid | 创建者id |
 
+**访问对象设计**
+
+考虑如下现实:
+- 数据库查询通常需要一个结构的字段作为匹配. 例如: User 在数据库中查询时依赖 User.Uid.
+- 小对象或者基本类型复制的操作速度极快.
+- 尽可能保持一致的调用形式有利于处理.
+
+基于上述现实, 设计如下访问对象:
+- 结构对象通常为: `type xxxDao struct {}`.
+- 返回值使用具名返回.
+- 所有 repo 接口传递结构类型对象形参总是为 dao, 假设这样的形参总是不超过一个, dao 唯一; 其余形参按照语义进行命名.
+- 接口简单类型直接定义返回值, 复杂类型总是按照顺序进行数据返回定义: ptr dao 结构 > 显式返回值, 所有形式均需要返回 error.
+- 部分特殊对象采用泛型封装形式, 例如: pagenation; 对象装配原始值返回, 不做 dao -> dpo 转换.
+
+```go
+// 对于 User 结构, 如果结构简单, User 或者 *User 均可
+func InsertUser(dao *User) (uid int, err error) {}
+// 对于 User 结构, 如果结构简单, User 或者 *User 均可
+func UpdateUser(dao *User) (err error) {}
+// 查询一定需要指明查询依据
+func QueryUserById(uid int) (dao *User, err error) {}
+func QueryUserByEmail(email string) (dao *User, err error) {}
+// 删除一定需要指明删除依据, 关于软硬删除问题: 应当精细化到函数调用 -> strict 总是作为第一bool参数, false 为软删除, true 为硬删除.
+func DeleteUserById(strict bool, uid int) (err error) {}
+func DeleteUserByEmail(strict bool, email string) (err error) {}
+// 是否开启事务?
+func InsertUsers(dao []*User) (uids []int, err error) {}
+func UpdateUsers(dao []*User) (uids []int, err error) {}
+func QueryUsersByIds(uids []int) (dao Pagenation[*User], err error) {}
+func QueryUsersByEmail(emails []string) (dao Pagenation[*User], err error) {}
+func DeleteUsersByIds(strict bool, uids []int) (uids []int, err error) {}
+func DeleteUsersByEmails(strict bool, emails []string) (uids []int, err error) {}
+```
+
 ### <a id="design-peer">端点设计</a>
 
 #### 用户
@@ -188,9 +220,9 @@ rbac2: 在 rbac0 基础上加入了角色互斥制约的功能.
 
 ### <a id="design-rpc">rpc设计</a>
 
-
-
 ### <a id="design-middleware">中间件设计</a>
+
+### <a id="design-config">配置设计</a>
 
 ## <a id="func-index">函数索引</a>
 

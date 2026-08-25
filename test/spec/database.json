@@ -1,0 +1,10 @@
+{
+    "dev": [
+        {
+            "name": "localhost:3306/rbac",
+            "type": "mariadb",
+            "driver": "mysql",
+            "dsn": "root:root_123@tcp(127.0.0.1:3306)/rbac"
+        }
+    ]
+}
