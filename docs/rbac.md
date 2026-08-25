@@ -3,6 +3,7 @@
 - [概述](#overview)
 - [原理](#principle)
 - [设计](#design)
+    - [对象设计](#design-obj)
     - [数据库设计](#design-db)
     - [端点设计](#design-peer)
     - [rpc设计](#design-rpc)
@@ -16,7 +17,28 @@ rbac(基于角色的访问控制)用于解决服务的访问控制问题. 例如
 
 ## <a id="principle">原理</a>
 
+RBAC 即基于角色的权限访问控制（Role-Based Access Control). 这是一种通过角色关联权限，角色同时又关联用户的授权方式.
 
+**基本概念**
+
+- 角色（Role）：角色是一组权限的集合，代表了在组织内执行特定任务或职责的用户群体. 例如，“管理员”、“编辑”和“访客”等.
+- 用户（User）：系统中的实际用户，他们被分配到一个或多个角色，从而获得相应的权限.
+- 权限（Permission）：权限定义了用户可以对系统资源执行的操作，如“读取”、“写入”或“删除”等.
+- 会话（Session）：用户通过身份验证后建立的与系统之间的连接，会话中用户的角色和权限将被激活.
+
+**3 种模型**
+
+rbac0: 最简单、最原始的实现方式.
+
+rbac1: 在 rbac0 基础上加入了角色权限继承的功能.
+
+rbac2: 在 rbac0 基础上加入了角色互斥制约的功能.
+
+**思路**
+
+1. 将 permission 细化为: action + resource
+2. 集成 rbac1 思路: 每个 role 有 parent_id 形成继承追溯链路
+3. 简单链路: 用户注册(uid, password, uname), 当前无任何角色 -> 赋予角色(关联permissions) -> 用户登录(会话内加载权限, 前端加载查看权限约束ui显示, 后端加载其他权限) -> 用户操作 -> 访问控制中间件 -> 业务逻辑.
 
 ## <a id="design">设计</a>
 
@@ -39,23 +61,100 @@ rbac(基于角色的访问控制)用于解决服务的访问控制问题. 例如
 └── service.go <- 业务逻辑
 ```
 
+### <a id="design-obj">对象设计</a>
+
+
+
 ### <a id="design-db">数据库设计</a>
 
-*table-name-1*
+*meta* - 元信息(所有的表都包含的字段, 统一提取并定义)
 
 |字段|类型|null mode|默认值|约束|注释|
 |:-:|:-:|:-:|:-:|:-:|:-:|
-| - | - | - | - | - | - |
+| id | bigint | not null | - | auto_inc, pk | 主键 |
+| created_at | datetime | not null | current_timestamp() | - | 创建时间 |
+| updated_at | datetime | not null | current_timestamp() | on update current_timestamp() | 更新时间 |
+| deleted_at | datetime | null | null | - | 删除时间 |
 
 ---
 
-*table-name-2*
+*users* - 用户
 
 |字段|类型|null mode|默认值|约束|注释|
 |:-:|:-:|:-:|:-:|:-:|:-:|
-| - | - | - | - | - | - |
+| uid | bigint | not null | - | - | 用户唯一标识 |
+| uname | varchar(32) | not null | - | - | 用户名 |
+| password | varchar(255) | not null | - | - | 密码 |
+| email | varchar(128) | not null | "" | - | 邮箱 |
+| phone | varchar(128) | not null | "" | - | 手机 |
+
+---
+
+*roles* - 角色
+
+|字段|类型|null mode|默认值|约束|注释|
+|:-:|:-:|:-:|:-:|:-:|:-:|
+| rid | bigint | not null | - | - | 角色唯一标识 |
+| rname | varchar(255) | not null | - | - | 角色名称 |
+| creater | bigint | not null | - | ref users.uid | 创建者id |
+| inherit_id | bigint | not null | 0 | ref roles.rid | 继承id, 0-继承终点 |
+
+---
+
+*users_to_roles* - 用户-角色关联
+
+|字段|类型|null mode|默认值|约束|注释|
+|:-:|:-:|:-:|:-:|:-:|:-:|
+| user_id | bigint | not null | - | ref users.uid | 用户id |
+| role_id | bigint | not null | - | ref roles.rid | 角色id |
+| creater | bigint | not null | - | ref users.uid | 创建者id |
+
+---
+
+*actions* - 操作
+
+|字段|类型|null mode|默认值|约束|注释|
+|:-:|:-:|:-:|:-:|:-:|:-:|
+| aid | bigint | not null | - | - | 操作唯一标识 |
+| aname | varchar(64) | not null | - | - | 操作名称 |
+| creater | bigint | not null | - | ref users.uid | 创建者id |
+
+---
+
+*resources* - 资源
+
+|字段|类型|null mode|默认值|约束|注释|
+|:-:|:-:|:-:|:-:|:-:|:-:|
+| rid | bigint | not null | - | - | 资源唯一标识 |
+| rname | varchar(255) | not null | - | - | 资源名称 |
+| creater | bigint | not null | - | ref users.uid | 创建者id |
+
+---
+
+*permissions* - 权限(操作-资源关联)
+
+|字段|类型|null mode|默认值|约束|注释|
+|:-:|:-:|:-:|:-:|:-:|:-:|
+| pid | bigint | not null | - | - | 权限唯一标识 |
+| action_id | bigint | not null | - | ref actions.aid | 操作id |
+| action | varchar(64) | not null | - | ref actions.aname | 操作 |
+| resource_id | bigint | not null | - | ref resources.rid | 资源id |
+| resource | varchar(255) | not null | - | ref resources.rname | 资源 |
+| creater | bigint | not null | - | ref users.uid | 创建者id |
+
+---
+
+*roles_to_permissions* - 角色-权限关联
+
+|字段|类型|null mode|默认值|约束|注释|
+|:-:|:-:|:-:|:-:|:-:|:-:|
+| role_id | bigint | not null | - | ref roles.rid | 角色id |
+| permission_id | bigint | not null | - | ref permission.pid | 权限id |
+| creater | bigint | not null | - | ref users.uid | 创建者id |
 
 ### <a id="design-peer">端点设计</a>
+
+#### 用户
 
 *title-1*
 
