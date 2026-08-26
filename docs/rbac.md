@@ -154,28 +154,38 @@ rbac2: 在 rbac0 基础上加入了角色互斥制约的功能.
 
 考虑如下现实:
 - 数据库查询通常需要一个结构的字段作为匹配. 例如: User 在数据库中查询时依赖 User.Uid.
-- 小对象或者基本类型复制的操作速度极快.
-- 尽可能保持一致的调用形式有利于处理.
+- 小对象或者基本类型复制的操作速度极快, 因此优先考虑栈分配.
+- 尽可能保持一致的调用形式有利于统一处理.
 
 基于上述现实, 设计如下访问对象:
-- 结构对象通常为: `type xxxDao struct {}`.
-- 返回值使用具名返回.
-- 所有 repo 接口传递结构类型对象形参总是为 dao, 假设这样的形参总是不超过一个, dao 唯一; 其余形参按照语义进行命名.
-- 接口简单类型直接定义返回值, 复杂类型总是按照顺序进行数据返回定义: ptr dao 结构 > 显式返回值, 所有形式均需要返回 error.
-- 部分特殊对象采用泛型封装形式, 例如: pagenation; 对象装配原始值返回, 不做 dao -> dpo 转换.
+- 结构对象统一后缀: _Dao, 通常嵌入 SqlMeta 结构.
+- 对于允许为 null 的字段, 使用 sql.Nullxxx 类型适配.
+- 所有字段需要显式使用字段标注来映射到db列.
+- 跨表复杂对象构建不涉及列重构的情况下不单独映射dao结构.
+- 对于序列返回结构通常引入 pagenation 结构.
 
+对于repo层, 设计如下访问操作:
+- 所有注入函数公共前缀: Set_
+- 接口导出操作, 接口声明不需要形参声明.
+- 接口定义需要形参声明, 规则为: 有且唯一结构总是为 dao; 其余按照语义进行声明; 必然返回 error; 总是具名返回.
+- 简单结构值有用采用值类型, 复杂结构值有用采用指针类型; 简单结构值没用采用值类型, 复杂结构值没用采用值类型.
+- 对于操作序列性更新库操作, 视情况开启事务.
+
+
+一个简单的示例:
 ```go
 // 对于 User 结构, 如果结构简单, User 或者 *User 均可
-func InsertUser(dao *User) (uid int, err error) {}
-// 对于 User 结构, 如果结构简单, User 或者 *User 均可
+// 对于操作可能变化原有结构的使用指针传递, 否则使用值传递.
+func InsertUser(dao *User) (err error) {}
 func UpdateUser(dao *User) (err error) {}
-// 查询一定需要指明查询依据
-func QueryUserById(uid int) (dao *User, err error) {}
-func QueryUserByEmail(email string) (dao *User, err error) {}
-// 删除一定需要指明删除依据, 关于软硬删除问题: 应当精细化到函数调用 -> strict 总是作为第一bool参数, false 为软删除, true 为硬删除.
-func DeleteUserById(strict bool, uid int) (err error) {}
+// 查询需要指明查询匹配字段
+// 这里 User 字段足够简单, 返回值即可
+func QueryUserById(uid int) (dao User, err error) {}
+func QueryUserByEmail(email string) (dao User, err error) {}
+// 删除一般需要指明删除依据, 否则为直接关联id删除, 第一参数永远为 strict bool 用于控制软删除
+func DeleteUser(strict bool, uid int) (err error) {}
 func DeleteUserByEmail(strict bool, email string) (err error) {}
-// 是否开启事务?
+// 复杂关联操作需要考虑事务
 func InsertUsers(dao []*User) (uids []int, err error) {}
 func UpdateUsers(dao []*User) (uids []int, err error) {}
 func QueryUsersByIds(uids []int) (dao Pagenation[*User], err error) {}
@@ -184,13 +194,41 @@ func DeleteUsersByIds(strict bool, uids []int) (uids []int, err error) {}
 func DeleteUsersByEmails(strict bool, emails []string) (uids []int, err error) {}
 ```
 
-访问对象实现流程:
-1. 数据库映射. 对每个表进行 Dao 类型完全映射, 对于可 null 字段, 使用 sql.Nullxxx 类型.
-2. repo 接口定义. 对必要的操作先定义完整的接口签名, 后统一实现.
-
 ### <a id="design-peer">端点设计</a>
 
 #### 用户
+
+*title-1*
+
+```
+<method> <uri> <scheme>
+
+<headers>...
+
+<body>
+```
+
+|参数|参数类型|类型|约束|默认值|描述|
+|:-:|:-:|:-:|:-:|:-:|:-:|
+| - | - | - | - | - | - |
+
+---
+
+*title-2*
+
+```
+<method> <uri> <scheme>
+
+<headers>...
+
+<body>
+```
+
+|参数|参数类型|类型|约束|默认值|描述|
+|:-:|:-:|:-:|:-:|:-:|:-:|
+| - | - | - | - | - | - |
+
+#### 角色
 
 *title-1*
 
