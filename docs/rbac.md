@@ -184,6 +184,10 @@ func DeleteUsersByIds(strict bool, uids []int) (uids []int, err error) {}
 func DeleteUsersByEmails(strict bool, emails []string) (uids []int, err error) {}
 ```
 
+访问对象实现流程:
+1. 数据库映射. 对每个表进行 Dao 类型完全映射, 对于可 null 字段, 使用 sql.Nullxxx 类型.
+2. repo 接口定义. 对必要的操作先定义完整的接口签名, 后统一实现.
+
 ### <a id="design-peer">端点设计</a>
 
 #### 用户
